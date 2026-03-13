@@ -2,11 +2,16 @@
 import express from 'express';
 import cors from 'cors';
 import { connectDB, disconnectDB } from './config/db.js';
+import userRoutes from './routes/userRoutes.js';
+import habitRoutes from './routes/habitRoutes.js'
+
+
+// Connect To the Database
+connectDB();
 
 // initialize express app
 const app = express();
-connectDB(); // Connect to the database
-const PORT = 5001;
+const PORT = process.env.PORT ||5001;
 
 // middlewares
 // This will allow future frontend to talk to this backend
@@ -14,10 +19,20 @@ app.use(cors());
 // This will allow the server to read JSON data sent in request bodies
 app.use(express.json());
 
-// Mount routes
+// ----- Mount routes -----
+
+// test route
 app.get('/', (req, res) => {
-    res.json({ success: true, message: "API v1 is working!" });
+    res.json({ 
+        success: true, 
+        message: "Habit Tracker API v1 is working!",
+        lastTimeChecked: new Date().getTime().toString()
+    });
 });
+
+// user registeration route
+app.use('/api', userRoutes)
+app.use('/api', habitRoutes)
 
 // start the server
 app.listen(PORT, ()=> {
