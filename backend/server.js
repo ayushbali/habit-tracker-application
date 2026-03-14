@@ -4,7 +4,7 @@ import cors from 'cors';
 import { connectDB, disconnectDB } from './config/db.js';
 import userRoutes from './routes/userRoutes.js';
 import habitRoutes from './routes/habitRoutes.js'
-
+import logRoutes from './routes/logRoutes.js';
 
 // Connect To the Database
 connectDB();
@@ -33,6 +33,7 @@ app.get('/', (req, res) => {
 // user registeration route
 app.use('/api', userRoutes)
 app.use('/api', habitRoutes)
+app.use('/api', logRoutes);
 
 // start the server
 app.listen(PORT, ()=> {
