@@ -81,6 +81,7 @@ export const loginUser = async (req, res) => {
         username: user.username,
         email: user.email,
         message: "User logged in successfully.",
+        loginTime: new Date().getTime(), // This is just for testing purpose, to see when the user logged in. It is not used for future.
         token: generateToken(user._id),
       });
     }
@@ -94,6 +95,7 @@ export const loginUser = async (req, res) => {
 // @desc Delete a user
 // @route DELETE /api/delete-user/:id
 // This route will be used by admin to delete a user. It is not exposed to frontend yet, but it is here for future use.
+
 export const deleteUser = async (req, res) => {
   try {
     const id = req.params.id;
@@ -110,6 +112,7 @@ export const deleteUser = async (req, res) => {
     await User.findByIdAndDelete(id);
     res.status(200).json({
       message: "User deleted successfully.",
+      deletedAt: new Date().getTime(), // This is just for testing purpose, to see when the user was deleted. It is not used for future.
     });
   } catch (error) {
     res.status(500).json({
