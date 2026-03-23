@@ -1,4 +1,6 @@
+import mongoose from "mongoose";
 import Habit from "../models/Habit.js";
+import Log from "../models/Log.js";
 
 // @desc create a new Habit
 // @route POST /api/create-habit
@@ -93,5 +95,69 @@ export const deleteHabit = async (req, res) => {
     res.status(500).json({
       message: error.message,
     });
+  }
+};
+
+// @desc    Get stats and streaks for a specific habit
+// @route   GET /api/habits/:id/stats
+
+export const getHabitStats = async (req, res) => {
+  try {
+    const { id } = req.params; // Get the habit ID from the request parameters
+
+    // 1. MongoDB aggregation: DB does the heavy lifting
+    const statusCounts = await Log.aggregate([
+      // Stage 1: Filter logs for ONLY this specific habit
+      { $match: { habit: new mongoose.Types.ObjectId(id) } },
+      // Stage 2: Group them by their status and sum them up.
+      { $group: { _id: "$status", count: { $sum: 1 } } },
+    ]);
+
+    // format aggregation results into a clean object
+    let stats = { completed: 0, missed: 0 };
+    statusCounts.forEach((status) => {
+      status[status._id] = status.total;
+    });
+
+    // 2. Streak calculation: We calculate the current streak by fetching the most recent log for this habit and checking if it was completed yesterday. If it was, we continue counting backwards until we find a log that wasn't completed or we run out of logs.
+    // fetch only completed logs, sorted newest to oldest
+    const completedLogs = await Log.find({
+      habit: id,
+      status: "completed",
+    })
+      .sort({ date: -1 })
+      .select("date");
+
+    let currentStreak = 0;
+    let currentDate = new Date();
+
+    currentDate.setHours(0, 0, 0, 0); // Normalize today's date to exactly midnight
+
+    for (let i = 0; i < completedLogs.length; i++) {
+      const logDate = new Date(completedLogs[i].date);
+      logDate.setHours(0, 0, 0, 0); // Normalize log date to exactly midnight
+
+      // Calculate the difference in days
+      const diffTime = Math.abs(currentDate - logDate);
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+      // If the log was today (diff 0) or yesterday (diff 1), the streak continues!
+      if (diffDays === 0 || diffDays === 1) {
+        currentStreak++;
+        currentDate = logDate; // Move our pointer back one day
+      } else {
+        break; // A gap of more than 1 day means the streak is broken
+      }
+    }
+    res.status(200).json({
+      success: true,
+      totalCompleted: stats.completed,
+      totalFailed: stats.failed,
+      currentStreak,
+    });
+
+    // end try block
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };
