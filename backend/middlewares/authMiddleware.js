@@ -21,25 +21,24 @@ export const authMiddleware = async (req, res, next) => {
     req.headers.authorization.startsWith("Bearer")
   ) {
     try {
-      console.log(
-        `This is the request headers: ${req.headers.authorization} ---- token: ${token}`,
-      );
+      console.log(`This is the request headers: ${req.headers.authorization}`);
       // get the token from the authorization header
       token = req.headers.authorization.split(" ")[1];
-      console.log(`This is the token: ${token}`);
+
+      const testToken = token;
+      console.log(`This is the token: ${token} ---- token`);
 
       // verify the token
       const decoded = jwt.verify(token, process.env.JWT_SECRET, {
         algorithms: ["HS256"],
       });
-      console.log(
-        `${decoded} This is the decoded token: ${JSON.stringify(decoded)}`,
-      );
 
       // fetch the user from the database using the id inside the decoded token
       // .select('-password') ensures that the password field is not included in the user object that we attach to the request object. This is a security measure to prevent the password hash from being exposed in case of a bug or a leak.
       req.user = await User.findById(decoded.id).select("-password");
-
+      console.log(
+        `This is the decoded token: TYPE: ${typeof decoded} ---- ${JSON.stringify(decoded)}`,
+      );
       // the token is valid and the user exists, so we can call the next middleware
       next();
     } catch (error) {
