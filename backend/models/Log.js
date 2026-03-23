@@ -1,27 +1,35 @@
 // This schema records daily success of failure of a habit. It is used to track the progress of a habit over time.
 
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 // define the schema for a log entry.
-const logSchema = new mongoose.Schema({
-    habit:{
-        type: mongoose.Schema.Types.ObjectId, // Reference to the Habit being logged (ObjectId).
-        ref: 'Habit',
-        required: true
+const logSchema = new mongoose.Schema(
+  {
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    }, // Reference to the User who owns this log (ObjectId).
+    habit: {
+      type: mongoose.Schema.Types.ObjectId, // Reference to the Habit being logged (ObjectId).
+      ref: "Habit",
+      required: true,
     },
     date: {
-        type: Date,
-        default: Date.now
+      type: Date,
+      default: Date.now,
     }, // The date of the log entry (defaults to current date).
     status: {
-        type: String,
-        enum: ['completed', 'missed'],
-        required: true
+      type: String,
+      enum: ["completed", "missed"],
+      required: true,
     },
     notes: {
-        type: String, // Optional field in case you want to journal why you failed or succeeded on a particular day.
-        default: ''
-    }
-}, {timestamps: true}); 
+      type: String, // Optional field in case you want to journal why you failed or succeeded on a particular day.
+      default: "",
+    },
+  },
+  { timestamps: true },
+);
 
-export default mongoose.model('Log', logSchema);
+export default mongoose.model("Log", logSchema);
