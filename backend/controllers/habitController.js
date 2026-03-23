@@ -113,7 +113,7 @@ export const getHabitStats = async (req, res) => {
       { $group: { _id: "$status", count: { $sum: 1 } } },
     ]);
 
-    // format aggregation results into a clean object
+    // format aggregation results into a clean object.
     let stats = { completed: 0, missed: 0 };
     statusCounts.forEach((status) => {
       status[status._id] = status.total;
