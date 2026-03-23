@@ -4,13 +4,14 @@ import User from "../models/User.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
+import generateToken from "../utlils/generateToken.js";
 // Generate Token.
-const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, {
-    expiresIn: "30d",
-    algorithm: "HS256",
-  });
-};
+// const generateToken = (id) => {
+//   return jwt.sign({ id }, process.env.JWT_SECRET, {
+//     expiresIn: "30d",
+//     algorithm: "HS256",
+//   });
+// };
 
 // @desc Create a new user
 // @route POST /api/register-user
@@ -51,7 +52,6 @@ export const registerUser = async (req, res) => {
       username: user.username,
       email: user.email,
       message: "User created successfully.",
-      token: generateToken(user._id),
     });
   } catch (error) {
     res.status(500).json({
