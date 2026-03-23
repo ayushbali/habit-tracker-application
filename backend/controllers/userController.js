@@ -4,7 +4,7 @@ import User from "../models/User.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
-import generateToken from "../utlils/generateToken.js";
+import generateToken from "../utils/generateToken.js";
 // Generate Token.
 // const generateToken = (id) => {
 //   return jwt.sign({ id }, process.env.JWT_SECRET, {
