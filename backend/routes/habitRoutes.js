@@ -4,6 +4,7 @@ import {
   getHabits,
   updateHabit,
   deleteHabit,
+  getHabitStats,
 } from "../controllers/habitController.js";
 import { authMiddleware } from "../middlewares/authMiddleware.js";
 import logRoutes from "./logRoutes.js";
@@ -15,6 +16,8 @@ router.use("/habits/:habitId", logRoutes);
 
 router.post("/create-habit", authMiddleware, createHabit);
 router.get("/habits", authMiddleware, getHabits);
+
+router.get("/habits/:id/stats", authMiddleware, getHabitStats);
 router.put("/habits/:id", authMiddleware, updateHabit);
 router.delete("/habits/:id", authMiddleware, deleteHabit);
 
