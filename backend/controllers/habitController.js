@@ -15,8 +15,14 @@ export const createHabit = async (req, res) => {
       });
     }
 
+    // once data is validated, we can create a habit in the database using the Habit model.
+    // The .create() method is a convenient way to create and save a new document in one step.
+    // It takes an object as an argument, where the keys correspond to the fields defined in the Habit schema.
+    // In this case, we are creating a new habit with the user field set to the ID of the currently logged-in user (req.user._id), and the title, description, type, and isActive fields set to the values provided in the request body.
+
     const habit = await Habit.create({
-      user: req.user._id, // automatically assigns the logged in users id as the creator of the habit.
+      // The user field is automatically assigned the ID of the currently logged-in user, which is available in req.user._id thanks to the authMiddleware. This ensures that each habit is associated with the user who created it.
+      user: req.user._id,
       title,
       description,
       type,
